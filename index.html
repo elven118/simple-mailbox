@@ -1,0 +1,287 @@
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" type="text/css" href="style.css">
+	<script type="text/javascript">
+		var page = {
+			inbox: 0,
+			important: 0,
+			trash: 0,
+		};
+		var mailbox = "inbox";
+
+		function loadCheckAll() {
+			const checkbox = document.getElementById('checkAll')
+			checkbox.addEventListener('change', (event) => {
+				if (event.currentTarget.checked) {
+					const checkBoxes = document.getElementsByClassName("checkbox");
+					for (var i = 0; i < checkBoxes.length; i++) {
+						checkBoxes[i].checked = true;
+					}
+				} else {
+					const checkBoxes = document.getElementsByClassName("checkbox");
+					for (var i = 0; i < checkBoxes.length; i++) {
+						checkBoxes[i].checked = false;
+					}
+				}
+			});
+		}
+
+		function loadNextInbox() {
+			page.inbox += 1;
+			ajaxLoadEmail(page.inbox, mailbox);
+		}
+
+		function loadPreviousInbox() {
+			page.inbox -= 1;
+			ajaxLoadEmail(page.inbox, mailbox);
+		}
+
+		function loadNextImportant() {
+			page.important += 1;
+			ajaxLoadEmail(page.important, mailbox);
+		}
+
+		function loadPreviousImportant() {
+			page.important -= 1;
+			ajaxLoadEmail(page.important, mailbox);
+		}
+
+		function loadNextTrash() {
+			page.trash += 1;
+			ajaxLoadEmail(page.trash, mailbox);
+		}
+
+		function loadPreviousTrash() {
+			page.trash -= 1;
+			ajaxLoadEmail(page.trash, mailbox);
+		}
+
+		function deleteForever() {
+			ajaxChangeEmail("rubbish");
+		}
+
+		function moveDelete() {
+			ajaxChangeEmail("trash");
+		}
+
+		function moveToImportant() {
+			ajaxChangeEmail("important");
+		}
+
+		function moveToInbox() {
+			ajaxChangeEmail("inbox");
+		}
+
+
+		function ajaxChangeEmail(moveMailbox) {
+			var checkBox = document.getElementsByClassName("checkBox");
+			var request_ids_str = "";
+			for (var i = 0; i < checkBox.length; i++) {
+				if (checkBox[i].checked) {
+					request_ids_str = request_ids_str + "&ids[]=" + checkBox[i].parentNode.parentNode.id;
+				}
+			}
+			var xmlhttp;
+			if (window.XMLHttpRequest) {
+				xmlhttp = new XMLHttpRequest();
+			} else {
+				xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+			}
+			xmlhttp.onreadystatechange = function () {
+				if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+					var email = document.getElementById("email");
+					page[mailbox] = 0;
+					var maxPage = parseInt(xmlhttp.responseText.slice(-1));
+					if (page[mailbox] == maxPage - 1) {
+						document.getElementById('next').setAttribute("disabled", "disabled");
+					} else {
+						document.getElementById('next').removeAttribute("disabled");
+					}
+					document.getElementById('previous').setAttribute("disabled", "disabled");
+					email.innerHTML = xmlhttp.responseText.slice(0, -1);
+					const checkBoxes = document.getElementsByClassName("checkbox");
+					for (var i = 0; i < checkBoxes.length; i++) {
+						checkBoxes[i].addEventListener("click", (e) => { e.stopPropagation(); });
+					}
+				}
+			}
+
+			xmlhttp.open("GET", "handleMailboxChange.php?mailbox=" + mailbox + request_ids_str + "&page=" + 0 + "&moveMailbox=" + moveMailbox, true);
+			xmlhttp.send();
+
+			document.getElementById('checkAll').checked = false;
+		}
+
+		function ajaxLoadEmail(page, mailboxType) {
+			var xmlhttp;
+			if (window.XMLHttpRequest) {
+				xmlhttp = new XMLHttpRequest();
+			} else {
+				xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+			}
+
+			xmlhttp.onreadystatechange = function () {
+				if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+					var email = document.getElementById("email");
+					var maxPage = parseInt(xmlhttp.responseText.slice(-1));
+					if (page == maxPage - 1) {
+						document.getElementById('next').setAttribute("disabled", "disabled");
+					} else {
+						document.getElementById('next').removeAttribute("disabled");
+					}
+					if (page == 0) {
+						document.getElementById('previous').setAttribute("disabled", "disabled");
+					} else {
+						document.getElementById('previous').removeAttribute("disabled");
+					}
+					email.innerHTML = xmlhttp.responseText.slice(0, -1);
+					const checkBoxes = document.getElementsByClassName("checkbox");
+					for (var i = 0; i < checkBoxes.length; i++) {
+						checkBoxes[i].addEventListener("click", (e) => { e.stopPropagation(); });
+					}
+				}
+			}
+			xmlhttp.open("GET", "handleEmailDisplay.php?page=" + page + "&mailbox=" + mailboxType, true);
+			xmlhttp.send();
+
+		}
+
+		function loadToInbox() {
+			mailbox = "inbox";
+			document.getElementById("inbox").style.color = "red";
+			document.getElementById("important").style.color = "black";
+			document.getElementById("trash").style.color = "black";
+
+			document.getElementById("toImportantButton").style.display = 'inline';
+			document.getElementById("toInboxButton").style.display = 'none';
+
+			document.getElementById("deleteButton").value = "Delete";
+			document.getElementById("deleteButton").onclick = function () { moveDelete(); };
+
+			document.getElementById("previous").onclick = function () { loadPreviousInbox(); };
+			document.getElementById("next").onclick = function () { loadNextInbox(); };
+
+			document.getElementById("function").style.visibility = 'visible';
+
+			ajaxLoadEmail(page.inbox, mailbox);
+		}
+
+		function loadToImportant() {
+			mailbox = "important";
+			document.getElementById("inbox").style.color = "black";
+			document.getElementById("important").style.color = "red";
+			document.getElementById("trash").style.color = "black";
+
+			document.getElementById("toImportantButton").style.display = 'none';
+			document.getElementById("toInboxButton").style.display = 'inline';
+
+			document.getElementById("deleteButton").value = "Delete";
+			document.getElementById("deleteButton").onclick = function () { moveDelete(); };
+
+			document.getElementById("previous").onclick = function () { loadPreviousImportant(); };
+			document.getElementById("next").onclick = function () { loadNextImportant(); };
+
+			document.getElementById("function").style.visibility = 'visible';
+
+			ajaxLoadEmail(page.important, mailbox);
+		}
+
+		function loadToTrash() {
+			mailbox = "trash";
+			document.getElementById("inbox").style.color = "black";
+			document.getElementById("important").style.color = "black";
+			document.getElementById("trash").style.color = "red";
+
+			document.getElementById("toImportantButton").style.display = 'inline';
+			document.getElementById("toInboxButton").style.display = 'inline';
+
+			document.getElementById("deleteButton").value = "Delete Forever";
+			document.getElementById("deleteButton").onclick = function () { deleteForever(); };
+
+			document.getElementById("previous").onclick = function () { loadPreviousTrash(); };
+			document.getElementById("next").onclick = function () { loadNextTrash(); };
+
+			document.getElementById("function").style.visibility = 'visible';
+
+			ajaxLoadEmail(page.trash, mailbox);
+		}
+
+		function loadEmailContent(elem) {
+			document.getElementById("function").style.visibility = 'hidden';
+			var id = elem.id;
+
+			var xmlhttp;
+			if (window.XMLHttpRequest) {
+				xmlhttp = new XMLHttpRequest();
+			} else {
+				xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+			}
+
+			xmlhttp.onreadystatechange = function () {
+				if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+					var email = document.getElementById("email");
+					email.innerHTML = xmlhttp.responseText;
+				}
+			}
+
+			xmlhttp.open("GET", "handleContentRequest.php?id=" + id, true);
+			xmlhttp.send();
+		}
+	</script>
+</head>
+
+<body onLoad="loadToInbox(); loadCheckAll();">
+
+	<!--heading division-->
+	<h2>Simple Mailbox</h2>
+
+	<!--function division-->
+	<div class="col-10">
+		<div class="col-2" id="emptyDiv"></div>
+		<div class="col-8">
+			<div class="function" id="function">
+				<button id="deleteButton">Delete</button>
+				<button id="toImportantButton" onClick="moveToImportant()">Move To Important</button>
+				<button id="toInboxButton" onClick="moveToInbox()">Move To Inbox</button>
+				<button id="previous">&lt;</button>
+				<button id="next">&gt;</button>
+			</div>
+		</div>
+	</div>
+
+	<!--mailbox division-->
+	<div class="col-2 mailbox">
+		<ul>
+			<li id="inbox" onClick="loadToInbox()">
+				<p>Inbox</p>
+			</li>
+			<li id="important" onClick="loadToImportant()">
+				<p>Important</p>
+			</li>
+			<li id="trash" onClick="loadToTrash()">
+				<p>Trash</p>
+			</li>
+		</ul>
+	</div>
+
+	<!--email header-->
+	<div class="col-8">
+		<div class="colt-1">
+			<input id="checkAll" name="checkBox" type="checkbox">
+		</div>
+		<p class="colt-1 se">Sender</p>
+		<p class="colt-1 ti">Title</p>
+		<p class="colt-1 da">Date</p>
+
+	</div>
+
+	<!--email division-->
+	<div id="email">
+	</div>
+
+</body>
+
+</html>

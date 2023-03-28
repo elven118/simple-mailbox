@@ -1,0 +1,180 @@
+* {
+	box-sizing: border-box;
+}
+
+body {
+	background-color: lightblue;
+}
+
+h2 {
+	text-align: center;
+	background-color: #9933cc;
+	color: #ffffff;
+	padding: 15px;
+}
+
+#emptyDiv {
+	height: 45px;
+}
+
+.function {
+	padding: 5px;
+}
+
+.function>button {
+	display: inline;
+	padding: 10px;
+	margin-right: 10px;
+	background-color: lightgray;
+	border: none;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+}
+
+.function>button:hover {
+	background-color: white;
+}
+
+.mailbox {
+	margin-top: 53px;
+}
+
+.mailbox p {
+	font-size: 25px;
+	margin: 10px;
+}
+
+.mailbox ul {
+	list-style-type: none;
+	padding: 0 10px 10px 10px;
+	margin: 0;
+}
+
+.mailbox li {
+	background-color: lightgray;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+	padding: 10px;
+}
+
+.mailbox li:hover {
+	background-color: white;
+}
+
+.se,
+.ti,
+.da {
+	font-weight: bold;
+}
+
+.eachEmail {
+	background-color: lightgrey;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+}
+
+.eachEmail:hover {
+	background-color: white;
+}
+
+#pagination>a {
+	cursor: pointer;
+	padding: 10px;
+	background-color: lightgray;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+}
+
+#pagination>a:hover {
+	background-color: white;
+}
+
+#pagination>.active {
+	background-color: red;
+}
+
+#pagination>.active:hover {
+	background-color: red;
+}
+
+#checkAll,
+.checkbox {
+	margin: 17px;
+	width: 19px;
+	height: 19px;
+}
+
+#emailContent {
+	padding: 20px;
+	background-color: white;
+}
+
+[class*="col-"] {
+	float: left;
+}
+
+[class*="colt-"] {
+	float: left;
+}
+
+.col-1 {
+	width: 10%;
+}
+
+.col-2 {
+	width: 20%;
+}
+
+.col-3 {
+	width: 30%;
+}
+
+.col-4 {
+	width: 40%;
+}
+
+.col-5 {
+	width: 50%;
+}
+
+.col-6 {
+	width: 60%;
+}
+
+.col-7 {
+	width: 70%;
+}
+
+.col-8 {
+	width: 80%;
+}
+
+.col-9 {
+	width: 90%;
+}
+
+.col-10 {
+	width: 100%;
+}
+
+.colt-1 {
+	width: 25%;
+}
+
+.colt-2 {
+	width: 50%;
+}
+
+.colt-3 {
+	width: 75%;
+}
+
+.colt-4 {
+	width: 100%;
+}
+
+@media only screen and (max-width: 768px) {
+	[class*="col-"] {
+		width: 100%;
+	}
+
+	.mailbox {
+		margin-top: 10px;
+	}
+}
